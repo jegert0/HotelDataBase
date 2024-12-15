@@ -1,0 +1,238 @@
+-- Populate Employee table with new employees
+INSERT INTO Employee (empID, position, DOB, salary, shift) VALUES 
+    (1, 'Manager', '1980-05-15', 60000, 'Morning'),
+    (2, 'Chef', '1990-08-22', 45000, 'Night'),
+    (3, 'Cleaner', '1975-09-10', 30000, 'Afternoon'),
+    (4, 'Receptionist', '1992-02-14', 35000, 'Morning'),
+    (5, 'Maintenance', '1985-07-20', 40000, 'Afternoon'),
+    (6, 'Chef', '1988-12-02', 42000, 'Morning'),
+    (7, 'Cleaner', '1993-04-30', 28000, 'Night'),
+    (8, 'Manager', '1982-10-18', 58000, 'Afternoon'),
+    (9, 'Receptionist', '1995-06-25', 33000, 'Night'),
+    (10, 'Manager', '1962-10-18', 58000, 'Afternoon'),
+    (11, 'Manager', '1993-11-18', 72000, 'Night'),
+    (12, 'Manager', '1957-08-20', 100000, 'Morning'),
+    (13, 'Manager', '1975-02-28', 92000, 'Afternoon'),
+    (14, 'Manager', '1987-04-20', 76000, 'Night'),
+    (15, 'Manager', '1999-07-01', 50000, 'Afternoon'),
+    (16, 'Manager', '1978-10-31', 63000, 'Night'),
+    (17, 'Manager', '1952-07-28', 120000, 'Afternoon'),
+    (18, 'Chef', '1989-01-23', 47000, 'Afternoon'),
+    (19, 'Cleaner', '1984-03-11', 32000, 'Morning'),
+    (20, 'Cleaner', '1987-08-14', 31500, 'Afternoon'),
+    (21, 'Cleaner', '1991-01-05', 31000, 'Night'),
+    (22, 'Cleaner', '1985-12-19', 30500, 'Morning'),
+    (23, 'Cleaner', '1992-06-30', 29500, 'Afternoon'),
+    (24, 'Cleaner', '1990-04-15', 28500, 'Night'),
+    (25, 'Cleaner', '1986-09-25', 27500, 'Morning'),
+    (26, 'Cleaner', '1988-11-21', 29000, 'Afternoon'),
+    (27, 'Cleaner', '1994-02-10', 28000, 'Night'),
+    (28, 'Cleaner', '1996-05-18', 30000, 'Afternoon'),
+    (29, 'Chef', '1984-09-10', 48000, 'Morning'),
+    (30, 'Chef', '1992-11-25', 46000, 'Night'),
+    (31, 'Chef', '1987-07-14', 50000, 'Afternoon'),
+    (32, 'Chef', '1990-05-22', 51000, 'Night'),
+    (33, 'Chef', '1985-08-12', 44000, 'Morning'),
+    (34, 'Chef', '1983-03-23', 45500, 'Afternoon'),
+    (35, 'Chef', '1991-01-18', 49500, 'Night'),
+    (36, 'Chef', '1986-04-05', 47000, 'Morning');
+
+
+-- Populate Admin table with new managers
+INSERT INTO Admin (empID, canSchedule, budgets) VALUES 
+    (1, TRUE, 20000.00),
+    (8, TRUE, 15000.00),
+    (10, TRUE, 25000.00),
+    (11, TRUE, 30000.00),
+    (12, TRUE, 40000.00),
+    (13, TRUE, 35000.00),
+    (14, TRUE, 28000.00),
+    (15, TRUE, 22000.00),
+    (16, TRUE, 27000.00),
+    (17, TRUE, 45000.00);
+
+-- Populate Hotel table
+INSERT INTO Hotel (hotelID, hotelName, location, numRooms, yearBuilt, ManagerID) VALUES 
+    (1, 'Grand Plaza', 'New York', 100, 2001, 1),
+    (2, 'Ocean View', 'Miami', 80, 1995, 8),
+    (3, 'Mountain Lodge', 'Denver', 50, 2010, 10),
+    (4, 'City Lights', 'Los Angeles', 120, 2005, 11),
+    (5, 'Desert Oasis', 'Phoenix', 60, 1998, 12),
+    (6, 'Urban Nest', 'Chicago', 70, 2003, 13),
+    (7, 'Beachside Inn', 'Miami Beach', 40, 2009, 14),
+    (8, 'Green Valley', 'Austin', 90, 1997, 15),
+    (9, 'Skyline Stay', 'Seattle', 110, 2002, 16),
+    (10, 'Downtown Suites', 'San Francisco', 85, 2006, 17);
+
+INSERT INTO Room (roomNum, isOccupied, isClean, isSuite, numBeds) VALUES 
+    (101, FALSE, TRUE, FALSE, 2),
+    (102, TRUE, FALSE, TRUE, 3),
+    (103, FALSE, TRUE, FALSE, 1),
+    (104, TRUE, TRUE, FALSE, 2),
+    (105, FALSE, TRUE, TRUE, 4),
+    (201, TRUE, FALSE, FALSE, 2),
+    (202, FALSE, TRUE, FALSE, 1),
+    (203, TRUE, TRUE, TRUE, 3),
+    (204, FALSE, TRUE, FALSE, 2),
+    (206, FALSE, TRUE, FALSE, 2),
+	(207, FALSE, TRUE, FALSE, 2),
+    (205, TRUE, FALSE, TRUE, 4);
+
+-- Populate Guest table
+INSERT INTO Guest (guestNum, roomNum, checkIn, checkOut, billID, isBanned) VALUES 
+    (1, 101, '2024-10-01', '2024-10-05', 1, FALSE),
+    (2, 102, '2024-09-20', '2024-09-25', 2, TRUE),
+    (3, 103, '2024-10-10', NULL, 3, FALSE),
+    (4, 104, '2024-09-30', '2024-10-04', 4, FALSE),
+    (5, 105, '2024-10-02', NULL, 5, FALSE),
+    (6, 201, '2024-09-25', '2024-10-01', 6, FALSE),
+    (7, 202, '2024-10-08', NULL, 7, TRUE),
+    (8, 203, '2024-10-11', '2024-10-15', 8, FALSE),
+    (9, 204, '2024-09-22', NULL, 9, FALSE),
+    (10, 205, '2024-10-05', '2024-10-10', 10, FALSE);
+
+-- Populate Bill table
+INSERT INTO Bill (billID, guestNum, totalAmount, charges) VALUES 
+    (1, 1, 500.00, 100.00),
+    (2, 2, 650.00, 150.00),
+    (3, 3, 200.00, 50.00),
+    (4, 4, 400.00, 75.00),
+    (5, 5, 1000.00, 200.00),
+    (6, 6, 300.00, 80.00),
+    (7, 7, 150.00, 30.00),
+    (8, 8, 750.00, 120.00),
+    (9, 9, 450.00, 90.00),
+    (10, 10, 600.00, 110.00);
+
+-- Populate Cleaning table with updated structure including new cleaners
+INSERT INTO Cleaning (empID, sector) VALUES 
+    (3, 'Lobby'),
+    (7, 'Rooms'),
+    (19, 'Pool Area'),
+    (20, 'Gym'),
+    (21, 'Restaurant'),
+    (22, 'Conference Room'),
+    (23, 'Parking Lot'),
+    (24, 'Spa'),
+    (25, 'Hallways'),
+    (26, 'Business Center'),
+    (27, 'Guest Lounge'),
+    (28, 'Main Entrance');
+
+-- Populate Cooking table with updated structure including new chefs
+INSERT INTO Cooking (empID, station) VALUES 
+    (2, 'Main Kitchen'),
+    (6, 'Grill Station'),
+    (18, 'Dessert Station'),
+    (29, 'Pastry Station'),
+    (30, 'Salads'),
+    (31, 'Breakfast Prep'),
+    (32, 'Lunch Prep'),
+    (33, 'Dinner Prep'),
+    (34, 'Specialty Meals'),
+    (35, 'Kids Meals'),
+    (36, 'Beverages');
+
+INSERT INTO Meal (mealOrder, mealType, foodName, timeServed, roomNum) VALUES 
+    (1, 'Breakfast', 'Pancakes', '08:00:00', 101),
+    (2, 'Lunch', 'Burger', '12:30:00', 102),
+    (3, 'Dinner', 'Steak', '18:00:00', 103),
+    (4, 'Breakfast', 'Omelet', '08:30:00', 104),
+    (5, 'Lunch', 'Salad', '13:00:00', 105),
+    (6, 'Dinner', 'Pasta', '19:00:00', 201),
+    (7, 'Breakfast', 'Waffles', '08:45:00', 202),
+    (8, 'Lunch', 'Pizza', '12:15:00', 203),
+    (9, 'Dinner', 'Chicken', '18:30:00', 204),
+    (10, 'Breakfast', 'Toast', '08:15:00', 205);
+
+-- Populate Inventory table
+INSERT INTO Inventory (itemID, expDate, stock, backOrder) VALUES 
+    (1, '2025-01-01', 100, FALSE),
+    (2, '2024-12-15', 50, FALSE),
+    (3, '2024-11-20', 200, TRUE),
+    (4, '2025-03-10', 30, FALSE),
+    (5, '2024-11-25', 10, TRUE),
+    (6, '2025-04-30', 60, FALSE),
+    (7, '2025-05-01', 120, FALSE),
+    (8, '2024-12-10', 90, TRUE),
+    (9, '2025-02-20', 80, FALSE),
+    (10, '2025-03-15', 25, FALSE);
+
+-- Populate Amenity table
+INSERT INTO Amenity (amenityName, needsMaint, hoursOfOp, description) VALUES 
+    ('Gym', FALSE, '06:00:00', 'Fitness Center'),
+    ('Pool', TRUE, '08:00:00', 'Outdoor Pool'),
+    ('Spa', FALSE, '10:00:00', 'Wellness Spa'),
+    ('Restaurant', FALSE, '07:00:00', 'Dining Area'),
+    ('Bar', TRUE, '17:00:00', 'Cocktail Bar'),
+    ('Business Center', FALSE, '09:00:00', 'Work and Conference Center'),
+    ('Laundry', FALSE, '00:00:00', 'Laundry Service'),
+    ('Parking', FALSE, NULL, 'Guest Parking'),
+    ('Sauna', TRUE, '09:00:00', 'Relaxation Room'),
+    ('Lounge', FALSE, '15:00:00', 'Guest Lounge');
+
+-- Populate Event table
+INSERT INTO Event (eventNum, empID, eventDate, guestNum) VALUES 
+    (1, 4, '2024-10-05', 1),
+    (2, 9, '2024-09-20', 2),
+    (3, 8, '2024-10-10', 3),
+    (4, 1, '2024-09-30', 4),
+    (5, 5, '2024-10-02', 5),
+    (6, 3, '2024-09-25', 6),
+    (7, 6, '2024-10-08', 7),
+    (8, 7, '2024-10-11', 8),
+    (9, 10, '2024-09-22', 9),
+    (10, 2, '2024-10-05', 10);
+
+-- Populate Runs table
+INSERT INTO Runs (eventNum, empID) VALUES 
+    (1, 1), (2, 2), (3, 3), (4, 4), (5, 5),
+    (6, 6), (7, 7), (8, 8), (9, 9), (10, 10);
+
+-- Populate Cleans table with updated structure including new cleaners
+INSERT INTO Cleans (empID, roomNum) VALUES 
+    (3, 101),    -- Cleaner
+    (7, 102),    -- Cleaner
+    (19, 103),   -- Cleaner
+    (20, 104),   -- Cleaner
+    (21, 105),   -- Cleaner
+    (22, 201),   -- Cleaner
+    (23, 202),   -- Cleaner
+    (24, 203),   -- Cleaner
+    (25, 204),   -- Cleaner
+    (26, 205),   -- Cleaner
+    (27, 206),   -- Cleaner
+    (28, 207);   -- Cleaner
+
+INSERT INTO Readies(empID, roomNum) VALUES
+    (3,101),
+    (7,201),
+    (19,102),
+    (20,202),
+    (21,103),
+    (22,203),
+    (23,104), 
+    (24,204),
+    (25,105),
+    (26,205);
+
+-- Populate Registers table
+INSERT INTO Registers (guestNum, eventNum) VALUES 
+    (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), 
+    (6, 6), (7, 7), (8, 8), (9, 9), (10, 10);
+
+-- Populate Used table
+INSERT INTO Used (guestNum, amenityName, TimeUsed) VALUES 
+    (1, 'Gym', 60), (2, 'Pool', 30), (3, 'Spa', 45), (4, 'Restaurant', 90),
+    (5, 'Bar', 120), (6, 'Business Center', 50), (7, 'Laundry', 20), 
+    (8, 'Parking', 10), (9, 'Sauna', 70), (10, 'Lounge', 40);
+
+INSERT INTO Cooks (empID, mealOrder) VALUES
+    (2, 3),(6, 9),(29, 10),(30, 1),(31, 2),
+    (32, 4),(33, 6),(34, 5),(35, 8),(36, 7);
+
+-- Populate Charges table
+INSERT INTO Charges (guestNum, billID, empID) VALUES 
+    (1, 1, 1), (2, 2, 8), (3, 3, 1), (4, 4, 8), 
+    (5, 5, 1), (6, 6, 8), (7, 7, 1), (8, 8, 8), 
+    (9, 9, 1), (10, 10, 8);

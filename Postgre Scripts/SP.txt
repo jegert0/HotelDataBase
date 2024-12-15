@@ -1,0 +1,94 @@
+﻿-- 1)Update a guest's room number and return guest info
+CREATE OR REPLACE FUNCTION update_room_num(p_guestnum INT, p_newNum INT)
+RETURNS TABLE (
+    guestnum INT,
+    old_roomnum INT,
+    new_roomnum INT
+) 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_old_roomnum INT;  -- Variable to store the old room number
+BEGIN
+    -- Retrieve the old room number before the update
+    SELECT roomnum INTO v_old_roomnum
+    FROM guest
+    WHERE guest.guestnum = p_guestnum;
+    
+    -- Perform the update
+    UPDATE guest
+    SET roomnum = p_newNum
+    WHERE guest.guestnum = p_guestnum;
+
+
+    -- Return the results
+    RETURN QUERY
+    SELECT 
+        p_guestnum AS guestnum,
+        v_old_roomnum AS old_roomnum,
+        p_newNum AS new_roomnum;
+END;
+$$;
+
+
+-- 2)Return highest paid employees with a salary of 50000 or more
+CREATE OR REPLACE FUNCTION highest_paid_employees()
+RETURNS TABLE(
+empid INT, 
+salary NUMERIC
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT employee.empid, employee.salary
+    FROM employee
+    WHERE employee.salary >= 50000;
+END;
+$$;
+
+
+-- 3)List guests who used a specific amenity
+CREATE OR REPLACE FUNCTION recent_amenity_users(p_amenityname VARCHAR)
+RETURNS TABLE (
+    guestnum INT,
+    timeused INT
+) 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        Used.guestnum, Used.timeused
+    FROM
+        Used
+    WHERE
+        Used.amenityname = p_amenityname
+    ORDER BY
+        Used.timeused DESC;
+END;
+$$;
+
+
+
+
+-- 4)Calculate the total bill by guestnum
+CREATE OR REPLACE FUNCTION calculate_total_bill(guestToFind INT, OUT totalBill DECIMAL(10,2))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Attempt to calculate the total bill with tax
+    SELECT totalAmount * 1.07 INTO totalBill
+    FROM Bill
+    WHERE guestnum = guestToFind;
+
+
+    -- If no data is found, set totalBill to NULL
+    IF NOT FOUND THEN
+        totalBill := NULL;
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        totalBill := NULL;
+END;
+$$;

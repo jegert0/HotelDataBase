@@ -1,0 +1,123 @@
+﻿--trigger function: when deleting a guest, delete their bill, any events they were --scheduled for, and any occurrences where they used an amenity. Update --isoccupied status for room
+CREATE OR REPLACE FUNCTION handle_guest_deletion()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check and delete related charges
+    DELETE FROM charges WHERE billid = OLD.billid;
+
+
+    -- Delete the associated bill
+    DELETE FROM bill WHERE billid = OLD.billid;
+
+
+   --Delete events they were registered for
+    DELETE FROM event WHERE guestnum = OLD.guestnum;
+
+
+   --Delete occurrences where they used an amenity
+              DELETE FROM used WHERE guestnum = OLD.guestnum;
+
+
+    -- Update the room to set isoccupied = false
+        UPDATE room
+    SET isoccupied = false
+    WHERE room.roomnum = (
+        SELECT roomnum
+        FROM guest
+        WHERE guestnum = OLD.guestnum
+    );
+
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+
+--trigger: calls the trigger function before a guest is deleted
+CREATE or replace TRIGGER delete_guest_and_update_room
+BEFORE DELETE ON guest
+FOR EACH ROW 
+EXECUTE FUNCTION handle_guest_deletion();
+
+
+        --trigger function: raise an exception if an attempt to update a room number
+   --tries to assign a room that is already occupied
+CREATE OR REPLACE FUNCTION check_room_availability()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if trying to occupy an already occupied room
+    IF NEW.isoccupied = TRUE THEN
+        -- Check if the specific room is already occupied
+        IF OLD.isoccupied = TRUE THEN
+            RAISE EXCEPTION 'Room % is already occupied', NEW.roomnum;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+-- Create the trigger to call the function before updating the room availability
+
+
+CREATE OR REPLACE TRIGGER trigger_check_room_availability
+BEFORE UPDATE ON room
+FOR EACH ROW
+EXECUTE FUNCTION check_room_availability();
+
+
+
+
+-- Trigger function: when an event is deleted, the event is deleted for the registers and runs tables
+
+
+CREATE OR REPLACE FUNCTION handle_event_cancelation()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM registers WHERE eventnum = OLD.eventnum;
+    DELETE FROM runs WHERE eventnum = OLD.eventnum;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Trigger creation
+CREATE TRIGGER delete_attendees_and_event_emp
+BEFORE DELETE ON event
+FOR EACH ROW
+EXECUTE FUNCTION handle_event_cancelation();
+
+
+
+
+
+
+
+
+
+
+
+
+--trigger function:whenever a guest uses an amenity, add $10 to total
+CREATE OR REPLACE FUNCTION add_amenity_usage_fee()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Bill
+    SET totalAmount = totalAmount + 10.00
+    WHERE guestNum = NEW.guestNum;
+        RETURN NEW;
+END;
+$$LANGUAGE plpgsql;
+
+
+--Trigger creations
+CREATE OR REPLACE TRIGGER amenity_usage_charge
+AFTER INSERT ON Used
+FOR EACH ROW
+EXECUTE FUNCTION add_amenity_usage_fee();
+
+
+DELETE FROM Used
+WHERE guestNum = 1 AND amenityName = 'Bar';

@@ -1,0 +1,378 @@
+-- Updates for the Employee table
+-- 1. Increase salary by 5% for all employees in the 'Chef' position
+UPDATE Employee
+SET salary = salary * 1.05
+WHERE position = 'Chef';
+
+-- 2. Change shift to 'Night' for all employees hired before 1990
+UPDATE Employee
+SET shift = 'Night'
+WHERE DOB < '1990-01-01';
+
+-- 3. Update the position to 'Senior Manager' for managers with a salary above 80000
+UPDATE Employee
+SET position = 'Senior Manager'
+WHERE position = 'Manager' AND salary > 80000;
+
+-- 4. Reduce salary by 2000 for cleaners working the 'Afternoon' shift
+UPDATE Employee
+SET salary = salary - 2000
+WHERE position = 'Cleaner' AND shift = 'Afternoon';
+
+
+-- Updates for the Admin table
+-- 1. Increase the budget by 10000 for all admins who can schedule
+UPDATE Admin
+SET budgets = budgets + 10000
+WHERE canSchedule = TRUE;
+
+-- 2. Set canSchedule to FALSE for admins with a budget below 15000
+UPDATE Admin
+SET canSchedule = FALSE
+WHERE budgets < 15000;
+
+-- 3. Set budget to 0 for admins without scheduling privileges
+UPDATE Admin
+SET budgets = 0
+WHERE canSchedule = FALSE;
+
+-- 4. Increase budget by 5% for all admins associated with an employee with a salary above 60000
+UPDATE Admin
+SET budgets = budgets * 1.05
+WHERE empID IN (SELECT empID FROM Employee WHERE salary > 60000);
+
+
+-- Updates for the Hotel table
+-- 1. Rename the hotel 'Ocean View' to 'Seaside Resort'
+UPDATE Hotel
+SET hotelName = 'Seaside Resort'
+WHERE hotelName = 'Ocean View';
+
+-- 2. Increase numRooms by 20 for all hotels built before the year 2000
+UPDATE Hotel
+SET numRooms = numRooms + 20
+WHERE yearBuilt < 2000;
+
+-- 3. Change the ManagerID to NULL for hotels with fewer than 50 rooms
+UPDATE Hotel
+SET ManagerID = NULL
+WHERE numRooms < 50;
+
+-- 4. Update the location to 'Downtown' for all hotels managed by empID 1
+UPDATE Hotel
+SET location = 'Downtown'
+WHERE ManagerID = 1;
+
+
+-- Updates for the Room table
+-- 1. Mark all rooms as occupied where the room number is greater than 200
+UPDATE Room
+SET isOccupied = TRUE
+WHERE roomNum > 200;
+
+-- 2. Set isClean to FALSE for all suite rooms
+UPDATE Room
+SET isClean = FALSE
+WHERE isSuite = TRUE;
+
+-- 3. Add one bed to all rooms with only one bed
+UPDATE Room
+SET numBeds = numBeds + 1
+WHERE numBeds = 1;
+
+-- 4. Set all rooms as suites if they have more than 3 beds
+UPDATE Room
+SET isSuite = TRUE
+WHERE numBeds > 3;
+
+
+-- Updates for the Guest table
+-- 1. Extend the checkOut date by one day for all guests who checked in in October
+UPDATE Guest
+SET checkOut = checkOut + INTERVAL '1 day'
+WHERE checkIn BETWEEN '2024-10-01' AND '2024-10-31';
+
+-- 2. Ban all guests who stayed in room 102
+UPDATE Guest
+SET isBanned = TRUE
+WHERE roomNum = 102;
+
+-- 3. Change roomNum to 105 for guests who are currently checked in (no checkOut date)
+UPDATE Guest
+SET roomNum = 105
+WHERE checkOut IS NULL;
+
+-- 4. Update billID to 11 for all banned guests
+UPDATE Guest
+SET billID = 11
+WHERE isBanned = TRUE;
+
+
+-- Updates for the Bill table
+-- 1. Increase totalAmount by 10% for all bills with charges over 100
+UPDATE Bill
+SET totalAmount = totalAmount * 1.10
+WHERE charges > 100;
+
+-- 2. Set charges to zero for bills with a total amount less than 200
+UPDATE Bill
+SET charges = 0
+WHERE totalAmount < 200;
+
+-- 3. Double the charges for bills associated with banned guests
+UPDATE Bill
+SET charges = charges * 2
+WHERE guestNum IN (SELECT guestNum FROM Guest WHERE isBanned = TRUE);
+
+-- 4. Set totalAmount to 500 for bills with no charges
+UPDATE Bill
+SET totalAmount = 500
+WHERE charges = 0;
+
+
+-- Updates for the Cleaning table
+-- 1. Change sector to 'Lobby' for all cleaners assigned to 'Hallways'
+UPDATE Cleaning
+SET sector = 'Lobby'
+WHERE sector = 'Hallways';
+
+-- 2. Assign sector 'Guest Rooms' to empID 19
+UPDATE Cleaning
+SET sector = 'Guest Rooms'
+WHERE empID = 19;
+
+-- 3. Reassign empID 20's sector to 'Pool'
+UPDATE Cleaning
+SET sector = 'Pool'
+WHERE empID = 20;
+
+-- 4. Change the sector to 'Parking Lot' for all employees with sector 'Spa'
+UPDATE Cleaning
+SET sector = 'Parking Lot'
+WHERE sector = 'Spa';
+
+
+-- Updates for the Cooking table
+-- 1. Change the station of empID 2 to 'Vegetarian Kitchen'
+UPDATE Cooking
+SET station = 'Vegetarian Kitchen'
+WHERE empID = 2;
+
+-- 2. Assign station 'Grill Station' to empID 30
+UPDATE Cooking
+SET station = 'Grill Station'
+WHERE empID = 30;
+
+-- 3. Update station to 'Pastry' for all employees with empID above 31
+UPDATE Cooking
+SET station = 'Pastry'
+WHERE empID > 31;
+
+-- 4. Change station to 'Main Kitchen' for chefs working on 'Breakfast Prep'
+UPDATE Cooking
+SET station = 'Main Kitchen'
+WHERE station = 'Breakfast Prep';
+
+
+-- Updates for the Meal table
+-- 1. Change mealType to 'Brunch' for all meals served between 10:00 and 12:00
+UPDATE Meal
+SET mealType = 'Brunch'
+WHERE timeServed BETWEEN '10:00:00' AND '12:00:00';
+
+-- 2. Update foodName to 'Vegan Salad' for all meals served in room 103
+UPDATE Meal
+SET foodName = 'Vegan Salad'
+WHERE roomNum = 103;
+
+-- 3. Set mealType to 'Dinner' for all meals served after 17:00
+UPDATE Meal
+SET mealType = 'Dinner'
+WHERE timeServed > '17:00:00';
+
+-- 4. Change roomNum to 105 for all meals of type 'Lunch'
+UPDATE Meal
+SET roomNum = 105
+WHERE mealType = 'Lunch';
+
+
+-- Updates for the Inventory table
+-- 1. Increase stock by 50 for all items with backOrder set to TRUE
+UPDATE Inventory
+SET stock = stock + 50
+WHERE backOrder = TRUE;
+
+-- 2. Set expDate to one month from today for all items with zero stock
+UPDATE Inventory
+SET expDate = CURRENT_DATE + INTERVAL '1 month'
+WHERE stock = 0;
+
+-- 3. Set backOrder to TRUE for items with stock less than 20
+UPDATE Inventory
+SET backOrder = TRUE
+WHERE stock < 20;
+
+-- 4. Set stock to 150 for items expiring within the next two months
+UPDATE Inventory
+SET stock = 150
+WHERE expDate BETWEEN CURRENT_DATE AND (CURRENT_DATE + INTERVAL '2 months');
+
+
+-- Updates for the Amenity table
+-- 1. Set needsMaint to TRUE for all amenities operating after 20:00
+UPDATE Amenity
+SET needsMaint = TRUE
+WHERE hoursOfOp > '20:00:00';
+
+-- 2. Update description to 'Luxury Spa' for the amenity named 'Spa'
+UPDATE Amenity
+SET description = 'Luxury Spa'
+WHERE amenityName = 'Spa';
+
+-- 3. Change hoursOfOp to '06:00:00' for all amenities without operating hours
+UPDATE Amenity
+SET hoursOfOp = '06:00:00'
+WHERE hoursOfOp IS NULL;
+
+-- 4. Set needsMaint to FALSE for amenities with descriptions containing 'Center'
+UPDATE Amenity
+SET needsMaint = FALSE
+WHERE description LIKE '%Center%';
+
+
+-- Updates for the Event table
+-- 1. Change eventDate to tomorrow for all events organized by empID 1
+UPDATE Event
+SET eventDate = CURRENT_DATE + INTERVAL '1 day'
+WHERE empID = 1;
+
+-- 2. Update empID to 9 for all events with eventNum less than 5
+UPDATE Event
+SET empID = 9
+WHERE eventNum < 5;
+
+-- 3. Change guestNum to 6 for all events scheduled after October 10
+UPDATE Event
+SET guestNum = 6
+WHERE eventDate > '2024-10-10';
+
+-- 4. Update eventDate to '2024-12-25' for all events involving guestNum 2
+UPDATE Event
+SET eventDate = '2024-12-25'
+WHERE guestNum = 2;
+
+--Updating m:n relationships can include
+--changing who cleans which room or changing what is being managed by someone
+
+--
+UPDATE Runs 
+SET eventNum = 1
+WHERE empID = 2	AND eventNum = 2;
+
+UPDATE Runs 
+SET eventNum = 2
+WHERE empID = 1 AND eventNUM = 1;
+
+UPDATE Runs 
+SET empID = 3
+WHERE empID = 10 AND eventNUM = 10;
+
+UPDATE Runs 
+SET eventNum = 5 , empID = 11
+WHERE empID = 4 AND eventNUM = 4;
+
+UPDATE Cleans 
+SET empID = 27
+WHERE empID = 28 AND roomNum = 207;
+
+UPDATE Cleans 
+SET roomNum = 201
+WHERE empID = 27 AND roomNum = 206;
+
+UPDATE Cleans 
+SET empID = 27
+WHERE empID = 21 AND roomNum = 105;
+
+UPDATE Cleans 
+SET empID = 3
+WHERE empID = 27 AND roomNum = 105;
+
+UPDATE Readies
+SET empID = 28
+WHERE empID = 3	AND roomNum = 102;
+
+UPDATE Readies
+SET empID = 3, roomNum = 103
+WHERE empID = 7	AND roomNum = 201;
+
+UPDATE Readies
+SET roomNum = 201
+WHERE empID = 19 AND roomNum = 102;
+
+UPDATE Readies
+SET empID = 27
+WHERE empID = 28 AND roomNum = 102;
+
+UPDATE Registers
+SET guestNum = 4
+WHERE guestNum = 2 AND eventNum = 2;
+
+UPDATE Registers
+SET guestNum = 9
+WHERE guestNum = 3 AND eventNum = 3;
+
+UPDATE Registers
+SET guestNum = 2
+WHERE guestNum = 4 AND eventNum = 4;
+
+UPDATE Registers
+SET guestNum = 1, eventNum = 10
+WHERE guestNum = 5 AND eventNum = 5;
+
+UPDATE Used
+SET amenityName = 'Pool'
+WHERE guestNum = 1 AND amenityName = 'Gym';
+
+UPDATE Used
+SET timeUsed = 31
+WHERE guestNum = 2 AND amenityName = 'Pool';
+
+UPDATE Used
+SET guestNum = 1
+WHERE guestNum = 4 AND amenityName = 'Restaurant';
+
+UPDATE Used
+SET timeUsed = 10, amenityName = 'Spa'
+WHERE guestNum = 9 AND amenityName = 'Sauna';
+
+UPDATE Cooks
+SET mealOrder = 4
+WHERE empID = 2 AND mealOrder = 3;
+
+UPDATE Cooks
+SET empID = 29
+WHERE empID = 30 AND mealOrder = 1;
+
+UPDATE Cooks
+SET mealOrder = 2
+WHERE empID = 29 AND mealOrder = 1;
+
+UPDATE Cooks
+SET empID = 30, mealOrder = 4 
+WHERE empID = 2 AND mealOrder = 3;
+
+UPDATE Charges
+SET empID = 8
+WHERE guestNum = 1 AND billID = 1;
+
+UPDATE Charges
+SET empID = 1
+WHERE guestNum = 2 AND billID = 2;
+
+UPDATE Charges
+SET empID = 10
+WHERE guestNum = 3 AND billID = 3;
+
+UPDATE Charges
+SET empID = 11, guestNum = 5
+WHERE guestNum = 4 AND billID = 4;

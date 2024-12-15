@@ -1,0 +1,67 @@
+﻿-- 1)View employees who organized or ran events
+CREATE OR REPLACE VIEW EmployeesEvents AS 
+SELECT 
+    e.empID,
+    e.position,
+    (SELECT COUNT(*) FROM Event ev WHERE ev.empID = e.empID) AS organizedEvents,
+    (SELECT COUNT(*) FROM Runs r WHERE r.empID = e.empID) AS ranEvents
+FROM 
+    Employee e
+WHERE 
+    e.empID IN (SELECT empID FROM Event UNION SELECT empID FROM Runs);
+
+
+
+
+-- 2)View hotels managed by managers with budgets greater than average
+CREATE OR REPLACE VIEW ManagedHigherBudgets AS
+SELECT 
+    h.hotelID,
+    h.hotelName,
+    h.location,
+    h.ManagerID
+FROM 
+    Hotel h
+WHERE 
+    h.ManagerID IN (
+        SELECT 
+            empID 
+        FROM 
+            Admin 
+        WHERE 
+            budgets > (SELECT avg(budgets) FROM Admin)
+    );
+
+
+
+
+
+
+--3)view bedrooms with higher than average beds
+CREATE OR REPLACE VIEW HigherBedRooms AS
+SELECT r.roomNum, r.numBeds, r.hotelID
+FROM Room r
+WHERE r.numBeds > (SELECT AVG(numBeds) FROM Room);
+
+
+
+
+
+
+
+
+--4)Updatable View, view just guests and their room number
+CREATE OR REPLACE VIEW ManagerViewGuests AS
+SELECT guestNum, roomNum FROM GUEST;
+
+
+UPDATE ManagerViewGuests SET roomNum = 105 WHERE guestNum = 4;
+
+
+Select * FROM ManagerViewGuests WHERE guestNum = 4;
+
+
+UPDATE ManagerViewGuests SET roomNum = 104 WHERE guestNum = 4;
+
+
+Select * FROM ManagerViewGuests WHERE guestNum = 4;

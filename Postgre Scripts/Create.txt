@@ -1,0 +1,154 @@
+CREATE TABLE Employee ( 
+    empID INT PRIMARY KEY, 
+    position VARCHAR(100) NOT NULL, 
+    DOB DATE CHECK (DOB < CURRENT_DATE) NOT NULL, 
+    salary DECIMAL(10, 2) CHECK (salary > 0), 
+    shift VARCHAR(20) CHECK (shift IN ('Morning', 'Afternoon', 'Night')) DEFAULT 'Morning'
+);
+
+CREATE TABLE Admin ( 
+    empID INT PRIMARY KEY, 
+    canSchedule BOOLEAN DEFAULT TRUE, 
+    budgets DECIMAL(15, 2) DEFAULT 0.00 CHECK (budgets >= 0), 
+    FOREIGN KEY (empID) REFERENCES Employee(empID) 
+);
+
+CREATE TABLE Hotel ( 
+    hotelID INT PRIMARY KEY, 
+    hotelName VARCHAR(255) NOT NULL, 
+    location VARCHAR(255) NOT NULL, 
+    numRooms INT CHECK (numRooms > 0), 
+    yearBuilt INT CHECK (yearBuilt >= 1900 AND yearBuilt <= EXTRACT(YEAR FROM CURRENT_DATE)), 
+    ManagerID INT, 
+    FOREIGN KEY (ManagerID) REFERENCES Admin(empID) 
+);
+
+CREATE TABLE Room ( 
+    roomNum INT PRIMARY KEY, 
+    isOccupied BOOLEAN DEFAULT FALSE, 
+    isClean BOOLEAN DEFAULT TRUE, 
+    isSuite BOOLEAN DEFAULT FALSE, 
+    numBeds INT NOT NULL CHECK (numBeds > 0),
+	hotelID INT,
+    FOREIGN KEY (hotelID) REFERENCES Hotel(hotelID)
+);
+
+CREATE TABLE Guest ( 
+    guestNum INT PRIMARY KEY, 
+    roomNum INT NOT NULL, 
+    checkIn DATE NOT NULL, 
+    checkOut DATE, 
+    billID INT NOT NULL, 
+    isBanned BOOLEAN DEFAULT FALSE NOT NULL,
+    FOREIGN KEY (roomNum) REFERENCES Room(roomNum)
+);
+
+CREATE TABLE Bill ( 
+    billID INT PRIMARY KEY, 
+    guestNum INT NOT NULL, 
+    totalAmount DECIMAL(10, 2) DEFAULT 0.00 CHECK (totalAmount >= 0), 
+    charges DECIMAL(10, 2) DEFAULT 0.00 CHECK (charges >= 0), 
+    FOREIGN KEY (guestNum) REFERENCES Guest(guestNum) 
+);
+
+CREATE TABLE Cleaning ( 
+    empID INT PRIMARY KEY, 
+    sector VARCHAR(100) NOT NULL, 
+    FOREIGN KEY (empID) REFERENCES Employee(empID) 
+);
+
+CREATE TABLE Cooking ( 
+    empID INT PRIMARY KEY, 
+    station VARCHAR(100) NOT NULL, 
+    FOREIGN KEY (empID) REFERENCES Employee(empID) 
+);
+
+CREATE TABLE Meal ( 
+    mealOrder INT PRIMARY KEY, 
+    mealType VARCHAR(50) NOT NULL CHECK (mealType IN ('Breakfast','Lunch','Dinner')),  
+    foodName VARCHAR(255) NOT NULL, 
+    timeServed TIME, 
+    roomNum INT NOT NULL,
+    FOREIGN KEY (roomNum) REFERENCES Room(roomNum) 
+);
+
+CREATE TABLE Inventory ( 
+    itemID INT PRIMARY KEY, 
+    expDate DATE, 
+    stock INT DEFAULT 0 CHECK (stock >= 0), 
+    backOrder BOOLEAN DEFAULT FALSE 
+);
+
+CREATE TABLE Amenity ( 
+    amenityName VARCHAR(100) PRIMARY KEY, 
+    needsMaint BOOLEAN DEFAULT FALSE, 
+    hoursOfOp TIME, 
+    description VARCHAR(255) 
+);
+
+CREATE TABLE Event ( 
+    eventNum INT PRIMARY KEY, 
+    empID INT NOT NULL, 
+    eventDate DATE NOT NULL, 
+    FOREIGN KEY (empID) REFERENCES Employee(empID) 
+);
+
+CREATE TABLE Runs (
+    eventNum INT,
+    empID INT,
+    PRIMARY KEY (eventNum, empID),
+    FOREIGN KEY (empID) REFERENCES Employee(empID), 
+    FOREIGN KEY (eventNum) REFERENCES Event(eventNum) 
+);
+
+CREATE TABLE Cleans (
+    empID INT,
+    roomNum INT,
+    PRIMARY KEY (empID, roomNum),
+    FOREIGN KEY (empID) REFERENCES Employee(empID),
+    FOREIGN KEY (roomNum) REFERENCES Room(roomNum)
+);
+
+CREATE TABLE Readies (
+    empID INT,
+    roomNum INT,
+    PRIMARY KEY (empID, roomNum),
+    FOREIGN KEY (empID) REFERENCES Employee(empID),
+    FOREIGN KEY (roomNum) REFERENCES Room(roomNum)
+);
+
+
+CREATE TABLE Registers (
+    guestNum INT,
+    eventNum INT,
+    PRIMARY KEY (guestNum, eventNum),
+    FOREIGN KEY (guestNum) REFERENCES Guest(guestNum),
+    FOREIGN KEY (eventNum) REFERENCES Event(eventNum)
+);
+
+CREATE TABLE Used (
+    guestNum INT,
+    amenityName VARCHAR(100),
+    TimeUsed INT NOT NULL,
+    PRIMARY KEY (guestNum, amenityName),
+    FOREIGN KEY (guestNum) REFERENCES Guest(guestNum),
+    FOREIGN KEY (amenityName) REFERENCES Amenity(amenityName)
+);
+
+CREATE TABLE Cooks (
+    empID INT,
+    mealOrder INT,
+    PRIMARY KEY (empID, mealOrder),
+    FOREIGN KEY (empID) REFERENCES Cooking(empID),
+    FOREIGN KEY (mealOrder) REFERENCES Meal(mealOrder)
+);
+
+CREATE TABLE Charges (
+    guestNum INT,
+    billID INT,
+    empID INT NOT NULL,
+    PRIMARY KEY (guestNum, billID),
+    FOREIGN KEY (guestNum) REFERENCES Guest(guestNum),
+    FOREIGN KEY (billID) REFERENCES Bill(billID),
+    FOREIGN KEY (empID) REFERENCES Admin(empID)
+);

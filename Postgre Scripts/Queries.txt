@@ -1,0 +1,96 @@
+-- Show which managers manage hotels with greater than 80 rooms
+--(JOIN 3 Tables)
+SELECT e.empID AS ManagerID, h.hotelName, h.numRooms  
+	FROM Employee e  
+	JOIN Admin a ON e.empID = a.empID  
+	JOIN Hotel h ON h.ManagerID = e.empID  
+	WHERE h.numRooms > 80; 
+
+--show what room, hotel, and amenities guests have used
+--(join 3 tables)
+SELECT 
+    Guest.guestNum AS GuestID,
+    Guest.checkIn AS CheckInDate,
+    Guest.checkOut AS CheckOutDate,
+    Room.roomNum AS RoomNumber,
+    Hotel.hotelName AS HotelName,
+    Hotel.location AS HotelLocation,
+    Amenity.amenityName AS AmenityUsed,
+    Amenity.description AS AmenityDescription
+FROM 
+    Guest
+JOIN 
+    Room ON Guest.roomNum = Room.roomNum
+JOIN 
+    Hotel ON Room.hotelID = Hotel.hotelID
+JOIN 
+    Used ON Guest.guestNum = Used.guestNum
+JOIN 
+    Amenity ON Used.amenityName = Amenity.amenityName
+WHERE 
+    Guest.isBanned = FALSE;
+
+-- show all cleaners and what sector and rooms they clean
+--(join 3 tables)
+SELECT e.empID, e.position, c.sector, r.roomNum
+FROM Employee e
+JOIN Cleaning c ON e.empID = c.empID
+JOIN Cleans cl ON e.empID = cl.empID
+JOIN Room r ON cl.roomNum = r.roomNum;
+
+--fetch guests who paid more than the average bill 
+--(subquery)
+SELECT guestNum, totalAmount FROM
+Guest JOIN Bill USING(guestNum)
+WHERE totalAmount > (SELECT AVG(totalAmount) FROM Bill)
+ORDER BY totalAmount ASC;
+
+--Select all employees who manage events and also clean
+--(subquery)
+SELECT ev.eventNum, ev.eventDate, e.empID, e.position
+FROM Event ev
+JOIN Employee e ON ev.empID = e.empID
+WHERE e.empID IN (
+    SELECT empID
+    FROM Cleaning
+);
+
+--Select all hotel managers who have a budget greater than the average
+--(subquery)
+SELECT a.empID, a.budgets, h.hotelName, h.location
+FROM Admin a
+JOIN Hotel h ON a.empID = h.ManagerID
+WHERE a.budgets > (
+    SELECT AVG(budgets)
+    FROM Admin
+);
+
+--show how many of each type of meal (breakfast/lunch/dinner) was served
+--(group by)
+SELECT mealType, COUNT(empID) AS countMeal FROM
+Cooking JOIN Cooks USING(empID) JOIN Meal USING(mealOrder)
+GROUP BY mealType;
+
+--Show total charges per guest for bills more than 475
+--(group by/having)
+SELECT g.guestnum, SUM(b.totalamount) AS totalamount 
+	FROM Guest g 
+	JOIN Bill b ON g.guestnum = b.guestnum 
+	GROUP BY g.guestnum 
+	HAVING SUM(b.totalamount) > 475; 
+
+--List all amenities used by guests along with the total time spent
+--(group by)
+SELECT a.amenityName, SUM(u.TimeUsed) AS total_time_used
+FROM Amenity a
+JOIN Used u ON a.amenityName = u.amenityName
+GROUP BY a.amenityName;
+
+--Find all guests who used the pool and the total time they used it for
+--(group by)
+SELECT g.guestNum, a.amenityName, SUM(u.TimeUsed) AS TotalTimeUsed
+FROM Guest g
+JOIN Used u ON g.guestNum = u.guestNum
+JOIN Amenity a ON u.amenityName = a.amenityName
+WHERE a.amenityName = 'Pool'
+GROUP BY g.guestNum, a.amenityName;
